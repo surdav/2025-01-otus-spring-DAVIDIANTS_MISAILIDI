@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- IOService: writes output to System.out -->
+    <bean id="ioService" class="ru.otus.hw.service.StreamsIOService">
+        <constructor-arg index="0">
+            <util:constant static-field="java.lang.System.out"/>
+        </constructor-arg>
+    </bean>
+
+    <!-- AppProperties: holds configuration such as the CSV file name -->
+    <bean id="appProperties" class="ru.otus.hw.config.AppProperties">
+        <constructor-arg index="0" value="questions.csv" />
+    </bean>
+
+    <!-- CSV-based QuestionDao: loads and parses the CSV file -->
+    <bean id="questionDao" class="ru.otus.hw.dao.CsvQuestionDao">
+        <constructor-arg ref="appProperties" />
+    </bean>
+
+    <!-- TestService: uses IOService and QuestionDao to display questions -->
+    <bean id="testService" class="ru.otus.hw.service.TestServiceImpl">
+        <constructor-arg ref="ioService" />
+        <constructor-arg ref="questionDao" />
+    </bean>
+
+    <!-- TestRunnerService: entry point for running the test -->
+    <bean id="testRunnerService" class="ru.otus.hw.service.TestRunnerServiceImpl">
+        <constructor-arg ref="testService" />
+    </bean>
+
+</beans>
