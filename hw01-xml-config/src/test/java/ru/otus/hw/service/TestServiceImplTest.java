@@ -35,14 +35,8 @@ class TestServiceImplTest {
     @Test
     void testExecuteTest() {
         // Prepare sample questions
-        List<Question> questions = List.of(
-                new Question("What is the capital of France?", List.of(new Answer("Paris", true), new Answer("London", false))),
-                new Question("What is 2+2?",
-                        Collections.singletonList(new Answer("4", true)))
-        );
+        QuestionDao dummyDao = getQuestionDao();
 
-        // Create a dummy QuestionDao returning our sample questions
-        QuestionDao dummyDao = () -> questions;
         TestIOService testIOService = new TestIOService();
         TestServiceImpl testService = new TestServiceImpl(testIOService, dummyDao);
 
@@ -57,6 +51,24 @@ class TestServiceImplTest {
                 .contains("2) London")
                 .contains("2. What is 2+2?")
                 .contains("1) 4");
+    }
+
+    private static QuestionDao getQuestionDao() {
+        List<Question> questions = List.of(
+                new Question(
+                        "What is the capital of France?", List.of(
+                                new Answer("Paris", true),
+                                new Answer("London", false)
+                )),
+                new Question(
+                        "What is 2+2?",
+                        Collections.singletonList(
+                                new Answer("4", true)
+                        ))
+        );
+
+        // Create a dummy QuestionDao returning our sample questions
+        return () -> questions;
     }
 
 }
