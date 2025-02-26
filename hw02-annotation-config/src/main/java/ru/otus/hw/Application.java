@@ -7,11 +7,10 @@ import ru.otus.hw.service.TestRunnerService;
 public class Application {
     public static void main(String[] args) {
         // Creating a context based on Java configuration
-        try (var context = new AnnotationConfigApplicationContext(AppConfig.class)) {
+        var context = new AnnotationConfigApplicationContext(AppConfig.class);
 
-            var testRunnerService = context.getBean(TestRunnerService.class);
+        var testRunnerService = context.getBean(TestRunnerService.class);
 
-            testRunnerService.run();
-        }
+        testRunnerService.run();
     }
 }
