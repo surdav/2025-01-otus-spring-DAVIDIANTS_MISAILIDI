@@ -23,7 +23,7 @@ public class CsvQuestionDao implements QuestionDao {
     @Override
     public List<Question> findAll() {
         // Get the CSV file name (hardcoded in the XML via AppProperties)
-        String filename = fileNameProvider.getTestFileName();
+        String filename = fileNameProvider.getFileName();
         try (Reader r = new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(filename), "Resource not found"),
                 StandardCharsets.UTF_8)) {

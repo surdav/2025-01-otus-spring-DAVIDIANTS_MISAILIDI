@@ -40,7 +40,7 @@ class CsvQuestionDaoTest {
                 """;
 
         // Mocking the behavior of TestFileNameProvider
-        when(testFileNameProvider.getTestFileName()).thenReturn(testFileName);
+        when(testFileNameProvider.getFileName()).thenReturn(testFileName);
 
         // Simulating InputStream for the CSV content
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
@@ -61,14 +61,14 @@ class CsvQuestionDaoTest {
         assertThat(questions.get(1).text()).isEqualTo("How should resources be loaded form jar in Java?");
         assertThat(questions.get(2).text()).isEqualTo("Which option is a good way to handle the exception?");
 
-        verify(testFileNameProvider, times(1)).getTestFileName();
+        verify(testFileNameProvider, times(1)).getFileName();
     }
 
     @Test
     void findAll_ShouldThrowQuestionReadException_WhenResourceNotFound() {
         // Arrange
         String testFileName = "nonexistent.csv";
-        when(testFileNameProvider.getTestFileName()).thenReturn(testFileName);
+        when(testFileNameProvider.getFileName()).thenReturn(testFileName);
 
         // Simulating a missing resource (null)
         ClassLoader classLoader = mock(ClassLoader.class);
@@ -79,7 +79,7 @@ class CsvQuestionDaoTest {
                 .isInstanceOf(QuestionReadException.class)
                 .hasMessageContaining("Failed to read questions from CSV");
 
-        verify(testFileNameProvider, times(1)).getTestFileName();
+        verify(testFileNameProvider, times(1)).getFileName();
     }
 
     @Test
@@ -91,7 +91,7 @@ class CsvQuestionDaoTest {
                 Only one column here;MalformedAnswer
                 """;
 
-        when(testFileNameProvider.getTestFileName()).thenReturn(testFileName);
+        when(testFileNameProvider.getFileName()).thenReturn(testFileName);
 
         // Simulating InputStream for malformed CSV content
         InputStream malformedCsvStream = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
@@ -106,6 +106,6 @@ class CsvQuestionDaoTest {
                 .hasMessageContaining("Failed to read questions from CSV");
 
         // Verifying that fileNameProvider is called only once
-        verify(testFileNameProvider, times(1)).getTestFileName();
+        verify(testFileNameProvider, times(1)).getFileName();
     }
 }

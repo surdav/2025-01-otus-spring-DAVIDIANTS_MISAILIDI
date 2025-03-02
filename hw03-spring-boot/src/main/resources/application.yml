@@ -5,8 +5,6 @@ spring:
     fallbackToSystemLocale: false # Do not fallback to the system's default locale
   application:
     name: hw03-spring-boot
-  profiles:
-    active: default
 
 test:
   rightAnswersCountToPass: 3

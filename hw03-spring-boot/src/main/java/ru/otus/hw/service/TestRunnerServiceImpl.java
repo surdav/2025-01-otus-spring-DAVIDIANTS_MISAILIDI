@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Service // Mark the service as a Spring Bean
+@Service
 public class TestRunnerServiceImpl implements TestRunnerService {
 
     private final TestService testService;
@@ -15,10 +15,12 @@ public class TestRunnerServiceImpl implements TestRunnerService {
 
     private final LocalizationService localizationService;
 
+    private final LocalizedIOService localizedIOService;
+
     @Override
     public void run() {
         // Output a localized message indicating the test is starting
-        System.out.println(localizationService.getMessage("TestRunner.starting"));
+        localizedIOService.printLineLocalized(localizationService.getMessage("TestRunner.starting"));
 
         // Determine the student
         var student = studentService.determineCurrentStudent();
@@ -30,6 +32,6 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         resultService.showResult(testResult);
 
         // Output a localized message indicating the test is complete
-        System.out.println(localizationService.getMessage("TestRunner.completed"));
+        localizedIOService.printLineLocalized(localizationService.getMessage("TestRunner.completed"));
     }
 }
