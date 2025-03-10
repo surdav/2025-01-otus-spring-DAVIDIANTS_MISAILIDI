@@ -1,0 +1,4 @@
+# Añade tus propias preguntas aquí. Esta línea se debe omitir al configurar CsvToBean (withSkipLines)
+¿Hay vida en Marte?;Esto aún no está claro para la ciencia%true|Por supuesto. Los (OVNIs) rojos son de Marte. Y los verdes (OVNIs) son de Venus%false|Definitivamente no%false
+¿Cómo se debe cargar un recurso desde un jar en Java?;ClassLoader#getResourceAsStream o ClassPathResource#getInputStream%true|ClassLoader#getResource#getFile + FileReader%false|Wingardium Leviosa%false
+¿Cuál es la manera preferida de manejar excepciones?;@SneakyThrow%false|e.printStackTrace()%false|Propagarla tras envolverla previamente en una excepción de negocio (por ejemplo, QuestionReadException)%true|Ignorar la excepción%false
