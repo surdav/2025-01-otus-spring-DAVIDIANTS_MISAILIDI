@@ -1,0 +1,18 @@
+spring:
+  shell:
+    interactive:
+      enabled: true
+  messages:
+    baseName: messages
+    encoding: UTF-8
+    fallbackToSystemLocale: false # Do not fallback to the system's default locale
+  application:
+    name: hw03-spring-boot
+
+test:
+  rightAnswersCountToPass: 3
+  fileName: questions_es.csv
+
+# Set the default locale to Spanish (Spain)
+defaultLocale: es_ES
+
