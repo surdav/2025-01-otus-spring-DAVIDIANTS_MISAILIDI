@@ -93,10 +93,8 @@ public class JdbcBookRepository implements BookRepository {
         if (rowsAffected > 0 && key != null) {
             // Set the newly generated ID in the Book object
             book.setId(key.longValue());
-            // Log the inserted book ID for debugging purposes
             System.out.println("Inserted book with ID: " + book.getId());
         } else {
-            // Log a failure message if no key was returned
             System.out.println("Insert failed, no ID returned.");
         }
     }
