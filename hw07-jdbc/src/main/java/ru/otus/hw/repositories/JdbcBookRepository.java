@@ -1,6 +1,7 @@
 package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class JdbcBookRepository implements BookRepository {
@@ -24,31 +26,28 @@ public class JdbcBookRepository implements BookRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
-    public Optional<Book> findById(long id) {
-        String sql = """
-                SELECT 
-                    b.id AS book_id, 
-                    b.title AS book_title, 
-                    b.author_id AS author_id, 
-                    a.full_name AS author_name, 
-                    b.genre_id AS genre_id, 
-                    g.name AS genre_name
-                FROM books b
-                LEFT JOIN authors a ON b.author_id = a.id
-                LEFT JOIN genres g ON b.genre_id = g.id
-                WHERE b.id = :id
-                """;
+public Optional<Book> findById(long id) {
+    String sql = """
+            SELECT 
+                b.id AS book_id, 
+                b.title AS book_title, 
+                b.author_id AS author_id, 
+                a.full_name AS author_name, 
+                b.genre_id AS genre_id, 
+                g.name AS genre_name
+            FROM books b
+            LEFT JOIN authors a ON b.author_id = a.id
+            LEFT JOIN genres g ON b.genre_id = g.id
+            WHERE b.id = :id
+            """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
+    MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("id", id);
 
-        try {
-            List<Book> books = jdbcTemplate.query(sql, params, new BookRowMapper());
-            return books.isEmpty() ? Optional.empty() : Optional.of(books.get(0));
-        } catch (Exception e) {
-            throw new EntityNotFoundException("Book with id=" + id + " not found.");
-        }
-    }
+    List<Book> books = jdbcTemplate.query(sql, params, new BookRowMapper());
+
+    return books.stream().findFirst();
+}
 
     @Override
     public Book save(Book book) {
@@ -62,15 +61,10 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
+
         String sql = "DELETE FROM books WHERE id = :id";
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", id);
-
-        int rowsDeleted = jdbcTemplate.update(sql, params);
-        if (rowsDeleted == 0) {
-            throw new EntityNotFoundException("Book with id=" + id + " not found");
-        }
+        jdbcTemplate.update(sql, new MapSqlParameterSource().addValue("id", id));
     }
 
     public void insert(Book book) {
@@ -91,11 +85,11 @@ public class JdbcBookRepository implements BookRepository {
 
         // Check if rows were affected and the key is not null
         if (rowsAffected > 0 && key != null) {
-            // Set the newly generated ID in the Book object
             book.setId(key.longValue());
-            System.out.println("Inserted book with ID: " + book.getId());
+            log.info("Inserted book with ID: {}", book.getId());
         } else {
-            System.out.println("Insert failed, no ID returned.");
+            log.info("Insert failed, no ID returned.");
+            throw new IllegalStateException("Insert failed, no ID returned.");
         }
     }
 
