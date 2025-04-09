@@ -16,5 +16,6 @@
         <module>hw03-spring-boot</module>
         <module>hw05-adv-conf</module>
         <module>hw07-jdbc</module>
+        <module>hw-11-jpql</module>
     </modules>
 </project>
