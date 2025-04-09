@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.NonNull;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
