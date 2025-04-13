@@ -15,14 +15,17 @@ values
 -- Insert books, linked to authors and genres
 insert into books (id, title, author_id, genre_id)
 values
-    (1, 'BookTitle_1', 1, 1),
+    (1, 'BookTitle_1', 1, 1),  -- Required for tests
     (2, 'BookTitle_2', 2, 2),
     (3, 'BookTitle_3', 3, 3);
 
--- Insert comments, linked to books
+-- Reset books auto_increment value
+ALTER TABLE books ALTER COLUMN id RESTART WITH 4;
+
+-- Insert comments, linked to books (sync with tests)
 insert into comments (id, text, book_id)
 values
-    (1, 'Great book!', 1),
-    (2, 'Not my cup of tea.', 1),
-    (3, 'Brilliant read!', 2),
-    (4, 'Could be better.', 3);
+    (1, 'Integration Test Comment', 1);  -- Required for tests
+
+-- Reset comments auto_increment value
+ALTER TABLE comments ALTER COLUMN id RESTART WITH 2; -- Since we only have id = 1

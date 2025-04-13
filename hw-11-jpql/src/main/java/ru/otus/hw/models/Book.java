@@ -1,16 +1,6 @@
 package ru.otus.hw.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +15,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "books")
+@NamedEntityGraph(
+        name = "Book.authors-and-genres",
+        attributeNodes = {
+                @NamedAttributeNode("author"),
+                @NamedAttributeNode("genre")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +35,7 @@ public class Book {
     private long id;
 
     @NonNull
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
     @NonNull

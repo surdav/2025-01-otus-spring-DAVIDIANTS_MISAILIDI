@@ -36,6 +36,10 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     public void deleteById(long id) {
-        findById(id).ifPresent(em::remove);
+        findCommentOptionalById(id).ifPresent(em::remove);
+    }
+
+    private Optional<Comment> findCommentOptionalById(long id) {
+        return Optional.ofNullable(em.find(Comment.class, id));
     }
 }

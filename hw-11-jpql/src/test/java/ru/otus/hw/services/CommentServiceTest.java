@@ -1,5 +1,8 @@
 package ru.otus.hw.services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +11,10 @@ import ru.otus.hw.models.Comment;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
 class CommentServiceTest {
@@ -15,24 +22,60 @@ class CommentServiceTest {
     @Autowired
     private CommentService commentService;
 
-    @Test
-    void shouldReturnCommentById() {
-        // Проверяем, что метод возвращает комментарий по ID
-        Comment comment = commentService.findById(1L).orElseThrow();
+    @Autowired
+    private BookService bookService;
 
-        assertThat(comment).isNotNull();
-        assertThat(comment.getText()).isEqualTo("Great book!"); // значение из SQL
-        assertThat(comment.getBook()).isNotNull(); // Проверяем доступ к связанным данным (книга)
+    @PersistenceContext
+    private EntityManager em;
+
+    @BeforeEach
+    @Rollback
+    void setupData() {
+        commentService.save(
+                new Comment("Integration Test Comment",
+                        bookService.findById(1L).orElseThrow())
+        );
     }
 
     @Test
-    void shouldReturnAllCommentsForBook() {
-        // Проверяем получение всех комментариев для конкретной книги
+    void shouldSaveAndLoadCommentCorrectly() {
+
+        // Загружаем книгу с ID = 1 для создания нового комментария
+        var book = bookService.findById(1L).orElseThrow();
+
+        // Создаем и сохраняем новый комментарий
+        Comment newComment = new Comment("Fantastic book!", book);
+
+        commentService.save(newComment);
+
+        // Очищаем контекст
+        em.clear();
+
+        // Проверяем, что комментарий сохранён
         List<Comment> comments = commentService.findByBookId(1L);
 
-        assertThat(comments).isNotEmpty();
-        for (Comment comment : comments) {
-            assertThat(comment.getBook()).isNotNull(); // Проверяем связи, чтобы не было LazyInitializationException
-        }
+        assertThat(comments)
+                .isNotEmpty()
+                .anyMatch(comment -> comment.getText().equals("Fantastic book!"))
+                .allSatisfy(comment -> assertThat(comment.getBook()).isNotNull());
+    }
+
+    @Test
+    void shouldDeleteCommentCorrectly() {
+        // Удаляем комментарий с ID 1
+        commentService.deleteById(1L);
+
+        // Очищаем контекст
+        em.clear();
+
+        // Проверяем, что комментарий действительно удалён
+        var comment = commentService.findById(1L);
+        assertThat(comment).isEmpty();
+    }
+
+    @Test
+    void testCheckInitialData() {
+        assertTrue(bookService.findById(1L).isPresent(), "Book with id 1 must exist");
+        assertEquals("BookTitle_1", bookService.findById(1L).get().getTitle());
     }
 }

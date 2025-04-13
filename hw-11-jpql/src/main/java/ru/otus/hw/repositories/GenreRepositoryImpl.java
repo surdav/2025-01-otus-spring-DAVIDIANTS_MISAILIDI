@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -30,7 +31,7 @@ public class GenreRepositoryImpl implements GenreRepository {
     @Override
     @Transactional
     public Genre save(Genre genre) {
-        if (genre.getId() == 0) {
+        if (Objects.isNull(genre.getId())) {
             em.persist(genre);
             return genre;
         } else {
