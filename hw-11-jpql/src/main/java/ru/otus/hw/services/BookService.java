@@ -11,7 +11,9 @@ public interface BookService {
 
     Optional<Book> findById(long id);
 
-    Book save(String title, long authorId, long genreId);
+    Book create(String title, long authorId, long genreId);
 
     void deleteById(long id);
+
+    Book update(long id, String title);
 }

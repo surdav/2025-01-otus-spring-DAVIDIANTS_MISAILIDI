@@ -9,6 +9,9 @@ import ru.otus.hw.models.Book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 @SpringBootTest
 class BookServiceTest {
 
@@ -19,33 +22,53 @@ class BookServiceTest {
     private EntityManager em;
 
     @Test
-    void shouldSaveAndLoadBookCorrectly() {
-        // Создаем и сохраняем книгу
-        Book book = bookService.save("New Book", 1L, 1L);
+    @Transactional(propagation = Propagation.NEVER)
+    void shouldCreateAndLoadBookCorrectly() {
 
-        // Немедленно очищаем контекст, чтобы избежать влияния кэша уровня Persistence Context
+        Book book = bookService.create("New Book", 1L, 1L);
+
+        // Immediately clearing the context to avoid the influence of the Persistence Context level cache
         em.clear();
 
-        // Проверяем, что книга была сохранена и её можно загрузить заново
+        // Checking the book was saved and can be loaded again
         var savedBook = bookService.findById(book.getId()).orElseThrow();
         assertThat(savedBook).isNotNull();
         assertThat(savedBook.getTitle()).isEqualTo("New Book");
 
-        // Проверяем, что связи (автор и жанр) загружены корректно
+        // Checking the associations (author and genre) are loaded correctly
         assertThat(savedBook.getAuthor()).isNotNull();
-        assertThat(savedBook.getAuthor().getFullName()).isEqualTo("Author_1"); // Из data.sql
+        assertThat(savedBook.getAuthor().getFullName()).isEqualTo("Author_1"); // From data.sql
         assertThat(savedBook.getGenre()).isNotNull();
-        assertThat(savedBook.getGenre().getName()).isEqualTo("Genre_1"); // Из data.sql
+        assertThat(savedBook.getGenre().getName()).isEqualTo("Genre_1"); // From data.sql
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void shouldUpdateBookUsingDatabase() {
+        var bookId = 1L;
+
+        var updatedTitle = "Updated Book Title";
+
+        Book updatedBook = bookService.update(bookId, updatedTitle);
+
+        assertThat(updatedBook).isNotNull();
+
+        assertThat(updatedBook.getTitle()).isEqualTo(updatedTitle);
+    }
+
+    /**
+     * Ensures lazy-loaded relationships (e.g., author, genre) are accessible
+     * without causing LazyInitializationException, as Hibernate requires an
+     * active persistence context for initializing them.
+     */
+    @Test
     void shouldNotCauseLazyInitializationException() {
-        // Получаем список всех книг
+
         var books = bookService.findAll();
 
         assertThat(books).isNotEmpty();
 
-        // Проверяем, что доступ к связям внутри транзакции не вызывает LazyInitializationException
+        // Checking that accessing relationships inside the transaction does not throw LazyInitializationException
         for (Book book : books) {
             assertThat(book.getAuthor()).isNotNull();
             assertThat(book.getGenre()).isNotNull();
