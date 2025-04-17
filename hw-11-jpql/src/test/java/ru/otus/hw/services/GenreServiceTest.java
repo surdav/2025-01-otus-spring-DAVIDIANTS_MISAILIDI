@@ -17,7 +17,7 @@ class GenreServiceTest {
 
     @Test
     void shouldReturnAllGenres() {
-        // Проверяем, что метод возвращает все жанры
+
         List<Genre> genres = genreService.findAll();
 
         assertThat(genres).isNotEmpty();
@@ -25,10 +25,11 @@ class GenreServiceTest {
 
     @Test
     void shouldReturnGenreById() {
-        // Проверяем, что метод возвращает конкретный жанр по ID
+
         Genre genre = genreService.findById(1L).orElseThrow();
 
         assertThat(genre).isNotNull();
+
         assertThat(genre.getName()).isEqualTo("Genre_1");
     }
 }

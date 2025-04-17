@@ -62,20 +62,20 @@ class CommentServiceTest {
 
     @Test
     void shouldDeleteCommentCorrectly() {
-        // Удаляем комментарий с ID 1
+
         commentService.deleteById(1L);
 
-        // Очищаем контекст
         em.clear();
 
-        // Проверяем, что комментарий действительно удалён
         var comment = commentService.findById(1L);
+
         assertThat(comment).isEmpty();
     }
 
     @Test
     void testCheckInitialData() {
         assertTrue(bookService.findById(1L).isPresent(), "Book with id 1 must exist");
+
         assertEquals("BookTitle_1", bookService.findById(1L).get().getTitle());
     }
 }

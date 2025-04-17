@@ -27,8 +27,10 @@ class GenreRepositoryTest {
     @Test
     void shouldFindAllGenres() {
         List<Genre> genres = genreRepository.findAll();
-        assertThat(genres).isNotEmpty();
-        assertThat(genres.size()).isGreaterThan(0); // Проверяет, что количество жанров положительное
+        assertThat(genres)
+                .isNotEmpty()
+                .hasSizeGreaterThan(0);
+
     }
 
     @Test

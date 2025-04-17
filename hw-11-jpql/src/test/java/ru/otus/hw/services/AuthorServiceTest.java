@@ -17,7 +17,7 @@ class AuthorServiceTest {
 
     @Test
     void shouldReturnAllAuthors() {
-        // Проверяем, что метод возвращает всех авторов
+
         List<Author> authors = authorService.findAll();
 
         assertThat(authors).isNotEmpty();
@@ -25,7 +25,7 @@ class AuthorServiceTest {
 
     @Test
     void shouldReturnAuthorById() {
-        // Проверяем, что метод возвращает конкретного автора по ID
+
         Author author = authorService.findById(1L).orElseThrow();
 
         assertThat(author).isNotNull();

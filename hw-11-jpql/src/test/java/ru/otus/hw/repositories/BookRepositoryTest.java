@@ -35,7 +35,7 @@ class BookRepositoryTest {
     }
 
     @Autowired
-    private JdbcTemplate jdbcTemplate; // Для выполнения SQL-скриптов вручную
+    private JdbcTemplate jdbcTemplate; // For executing SQL scripts manually
 
     @BeforeEach
     void resetDatabase() {
@@ -54,54 +54,48 @@ class BookRepositoryTest {
 
     @Test
     void shouldSaveAndFindBook() {
-        // Создаем автора
+
         Author author = new Author();
         author.setFullName("Test Author");
         author = authorRepository.save(author);
 
-        // Создаем жанр
         Genre genre = new Genre();
         genre.setName("Test Genre");
         genre = genreRepository.save(genre);
 
-        // Создаем книгу с автором и жанром
         Book book = new Book();
         book.setTitle("Test Book");
         book.setAuthor(author);
         book.setGenre(genre);
 
-        // Сохраняем книгу
         bookRepository.save(book);
 
-        // Проверяем, что книга сохранилась
         List<Book> books = bookRepository.findAll();
+
         assertThat(books).contains(book);
     }
 
     @Test
     void shouldDeleteBookById() {
-        // Создаем автора
+
         Author author = new Author();
         author.setFullName("Test Author");
         author = authorRepository.save(author);
 
-        // Создаем жанр
         Genre genre = new Genre();
         genre.setName("Test Genre");
         genre = genreRepository.save(genre);
 
-        // Создаем книгу с автором и жанром
         Book book = new Book();
         book.setTitle("Test Book");
         book.setAuthor(author);
         book.setGenre(genre);
         book = bookRepository.save(book);
 
-        // Удаляем книгу
         bookRepository.deleteById(book.getId());
 
-        // Проверяем, что книги нет
         Optional<Book> foundBook = bookRepository.findById(book.getId());
+
         assertThat(foundBook).isEmpty();
     }
 

@@ -38,7 +38,7 @@ class CommentRepositoryTest {
     private GenreRepository genreRepository;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate; // Для выполнения SQL-скриптов вручную
+    private JdbcTemplate jdbcTemplate; // For executing SQL scripts manually
 
     @BeforeEach
     void resetDatabase() {
@@ -57,7 +57,7 @@ class CommentRepositoryTest {
 
     @Test
     void shouldFindCommentById() {
-        // Создаем связанные данные
+
         Author author = new Author();
         author.setFullName("Test Author");
         author = authorRepository.save(author);
@@ -84,7 +84,7 @@ class CommentRepositoryTest {
 
     @Test
     void shouldSaveNewComment() {
-        // Создаем связанные данные
+
         Author author = new Author();
         author.setFullName("Test Author");
         author = authorRepository.save(author);
@@ -99,7 +99,6 @@ class CommentRepositoryTest {
         book.setGenre(genre);
         book = bookRepository.save(book);
 
-        // Создаем комментарий
         Comment comment = new Comment();
         comment.setText("New comment");
         comment.setBook(book);
