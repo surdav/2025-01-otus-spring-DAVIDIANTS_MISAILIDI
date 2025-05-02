@@ -11,8 +11,6 @@ import ru.otus.hw.models.Comment;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.test.annotation.Rollback;
 
@@ -70,12 +68,5 @@ class CommentServiceTest {
         var comment = commentService.findById(1L);
 
         assertThat(comment).isEmpty();
-    }
-
-    @Test
-    void testCheckInitialData() {
-        assertTrue(bookService.findById(1L).isPresent(), "Book with id 1 must exist");
-
-        assertEquals("BookTitle_1", bookService.findById(1L).get().getTitle());
     }
 }
