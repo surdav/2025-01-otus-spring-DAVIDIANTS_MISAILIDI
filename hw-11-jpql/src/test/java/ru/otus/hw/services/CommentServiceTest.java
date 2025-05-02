@@ -3,10 +3,10 @@ package ru.otus.hw.services;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
@@ -16,7 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.test.annotation.Rollback;
 
+@Sql(scripts = {"/schema.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest
+@Transactional
+@Rollback
 class CommentServiceTest {
 
     @Autowired
@@ -27,16 +30,6 @@ class CommentServiceTest {
 
     @PersistenceContext
     private EntityManager em;
-
-    @BeforeEach
-    @Transactional
-    @Rollback
-    void setupData() {
-        commentService.save(
-                new Comment("Integration Test Comment",
-                        bookService.findById(1L).orElseThrow())
-        );
-    }
 
     @Test
     void shouldSaveAndLoadCommentCorrectly() {
@@ -81,6 +74,6 @@ class CommentServiceTest {
     void testCheckInitialData() {
         var title = bookService.findById(1L).map(Book::getTitle).orElse("");
 
-        assertThat(List.of("BookTitle_1", "Updated Book Title")).contains(title);
+        assertThat(title).isEqualTo("BookTitle_1");
     }
 }
