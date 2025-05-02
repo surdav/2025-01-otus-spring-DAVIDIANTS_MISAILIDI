@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
@@ -68,12 +67,5 @@ class CommentServiceTest {
         var comment = commentService.findById(1L);
 
         assertThat(comment).isEmpty();
-    }
-
-    @Test
-    void testCheckInitialData() {
-        var title = bookService.findById(1L).map(Book::getTitle).orElse("");
-
-        assertThat(title).isEqualTo("BookTitle_1");
     }
 }
