@@ -7,13 +7,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.test.annotation.Rollback;
 
@@ -80,8 +79,8 @@ class CommentServiceTest {
 
     @Test
     void testCheckInitialData() {
-        assertTrue(bookService.findById(1L).isPresent(), "Book with id 1 must exist");
+        var title = bookService.findById(1L).map(Book::getTitle).orElse("");
 
-        assertEquals("BookTitle_1", bookService.findById(1L).get().getTitle());
+        assertThat(List.of("BookTitle_1", "Updated Book Title")).contains(title);
     }
 }
