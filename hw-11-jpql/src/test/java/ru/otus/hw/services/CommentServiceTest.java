@@ -18,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
-@Transactional
-@Rollback
 class CommentServiceTest {
 
     @Autowired
@@ -32,6 +30,8 @@ class CommentServiceTest {
     private EntityManager em;
 
     @BeforeEach
+    @Transactional
+    @Rollback
     void setupData() {
         commentService.save(
                 new Comment("Integration Test Comment",
@@ -63,24 +63,19 @@ class CommentServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void shouldDeleteCommentCorrectly() {
-        // Загрузка книги и её комментариев
-        var book = bookService.findById(1L).orElseThrow();
 
-        var comment = commentService.findById(1L).orElseThrow();
+        commentService.deleteById(1L);
 
-        // Удаление комментария из коллекции
-        book.getComments().removeIf(c -> c.getId() == comment.getId());
+        em.flush(); // принудительно отправляем изменения в БД
 
-        // Обновляем книгу, чтобы сработал orphanRemoval
-        em.flush();
+        em.clear(); // очищаем контекст
 
-        em.clear();
+        var comment = commentService.findById(1L);
 
-        // Проверка, что комментарий удалён
-        var deletedComment = commentService.findById(1L);
-
-        assertThat(deletedComment).isEmpty();
+        assertThat(comment).isEmpty();
     }
 
     @Test
