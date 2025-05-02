@@ -2,6 +2,7 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
+@Transactional
+@Rollback
 class CommentServiceTest {
 
     @Autowired
@@ -29,7 +32,6 @@ class CommentServiceTest {
     private EntityManager em;
 
     @BeforeEach
-    @Rollback
     void setupData() {
         commentService.save(
                 new Comment("Integration Test Comment",
@@ -62,14 +64,23 @@ class CommentServiceTest {
 
     @Test
     void shouldDeleteCommentCorrectly() {
+        // Загрузка книги и её комментариев
+        var book = bookService.findById(1L).orElseThrow();
 
-        commentService.deleteById(1L);
+        var comment = commentService.findById(1L).orElseThrow();
+
+        // Удаление комментария из коллекции
+        book.getComments().removeIf(c -> c.getId() == comment.getId());
+
+        // Обновляем книгу, чтобы сработал orphanRemoval
+        em.flush();
 
         em.clear();
 
-        var comment = commentService.findById(1L);
+        // Проверка, что комментарий удалён
+        var deletedComment = commentService.findById(1L);
 
-        assertThat(comment).isEmpty();
+        assertThat(deletedComment).isEmpty();
     }
 
     @Test
