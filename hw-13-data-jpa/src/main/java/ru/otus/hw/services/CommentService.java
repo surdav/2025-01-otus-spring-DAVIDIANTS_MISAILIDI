@@ -1,5 +1,6 @@
 package ru.otus.hw.services;
 
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
@@ -11,7 +12,11 @@ public interface CommentService {
 
     List<Comment> findByBookId(long bookId);
 
-    Comment save(Comment comment);
+    Comment create(String text, Book book);
+
+    Comment update(long id, String text);
 
     void deleteById(long id);
+
+    Comment save(Comment comment);
 }

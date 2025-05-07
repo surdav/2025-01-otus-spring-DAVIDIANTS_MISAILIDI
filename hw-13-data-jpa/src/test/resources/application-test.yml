@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         entity_manager_factory_interface: jakarta.persistence.EntityManagerFactory
-        ddl-auto: none
+        ddl-auto: create-drop
 
   h2:
     console:
@@ -22,7 +22,7 @@ spring:
 
   sql:
     init:
-      schema-locations: classpath:schema.sql
+#      schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
       mode: always
 
