@@ -5,16 +5,17 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.models.Genre;
 
-@Sql(scripts = {"/clear.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest
+@Transactional(propagation = Propagation.NEVER)
 class BookServiceTest {
 
     @Autowired
@@ -24,7 +25,6 @@ class BookServiceTest {
     private EntityManager em;
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     void shouldCreateAndLoadBookCorrectly() {
 
         Book book = bookService.create("New Book", 1L, 1L);
@@ -35,27 +35,55 @@ class BookServiceTest {
         // Checking the book was saved and can be loaded again
         var savedBook = bookService.findById(book.getId()).orElseThrow();
         assertThat(savedBook).isNotNull();
-        assertThat(savedBook.getTitle()).isEqualTo("New Book");
 
-        // Checking the associations (author and genre) are loaded correctly
-        assertThat(savedBook.getAuthor()).isNotNull();
-        assertThat(savedBook.getAuthor().getFullName()).isEqualTo("Author_1"); // From data.sql
-        assertThat(savedBook.getGenre()).isNotNull();
-        assertThat(savedBook.getGenre().getName()).isEqualTo("Genre_1"); // From data.sql
+        // Creating the expected object
+        var expectedAuthor = new Author(1L, "Author_1");
+        var expectedGenre = new Genre(1L, "Genre_1");
+        var expectedBook = new Book(
+                savedBook.getId(),
+                "New Book",
+                expectedAuthor,
+                expectedGenre,
+                null);
+
+        // Recursively comparing objects
+        assertThat(savedBook)
+                .usingRecursiveComparison()
+                // Ignoring circular references
+                .ignoringFields("author.books", "genre.books", "comments")
+                .isEqualTo(expectedBook);
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
     void shouldUpdateBookUsingDatabase() {
         var bookId = 1L;
 
         var updatedTitle = "Updated Book Title";
 
-        Book updatedBook = bookService.update(bookId, updatedTitle);
+        var updatedAuthorId = 2L;
+
+        var updatedGenreId = 2L;
+
+        Book updatedBook = bookService.update(bookId, updatedTitle, updatedAuthorId, updatedGenreId);
 
         assertThat(updatedBook).isNotNull();
 
-        assertThat(updatedBook.getTitle()).isEqualTo(updatedTitle);
+        // Creating the expected object
+        var expectedAuthor = new Author(updatedAuthorId, "Author_2");
+        var expectedGenre = new Genre(updatedGenreId, "Genre_2");
+        var expectedBook = new Book(
+                bookId,
+                updatedTitle,
+                expectedAuthor,
+                expectedGenre,
+                null);
+
+        // Recursively comparing objects
+        assertThat(updatedBook)
+                .usingRecursiveComparison()
+                // Ignoring circular references
+                .ignoringFields("author.books", "genre.books", "comments")
+                .isEqualTo(expectedBook);
     }
 
     /**

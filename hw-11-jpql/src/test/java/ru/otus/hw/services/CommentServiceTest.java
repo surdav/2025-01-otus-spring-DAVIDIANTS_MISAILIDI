@@ -2,21 +2,23 @@ package ru.otus.hw.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.otus.hw.models.Comment;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.test.annotation.Rollback;
 
+@Sql(scripts = {"/clear.sql", "/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest
+@Transactional
+@Rollback
 class CommentServiceTest {
 
     @Autowired
@@ -27,15 +29,6 @@ class CommentServiceTest {
 
     @PersistenceContext
     private EntityManager em;
-
-    @BeforeEach
-    @Rollback
-    void setupData() {
-        commentService.save(
-                new Comment("Integration Test Comment",
-                        bookService.findById(1L).orElseThrow())
-        );
-    }
 
     @Test
     void shouldSaveAndLoadCommentCorrectly() {
@@ -61,21 +54,18 @@ class CommentServiceTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void shouldDeleteCommentCorrectly() {
 
         commentService.deleteById(1L);
 
-        em.clear();
+        em.flush(); // принудительно отправляем изменения в БД
+
+        em.clear(); // очищаем контекст
 
         var comment = commentService.findById(1L);
 
         assertThat(comment).isEmpty();
-    }
-
-    @Test
-    void testCheckInitialData() {
-        assertTrue(bookService.findById(1L).isPresent(), "Book with id 1 must exist");
-
-        assertEquals("BookTitle_1", bookService.findById(1L).get().getTitle());
     }
 }

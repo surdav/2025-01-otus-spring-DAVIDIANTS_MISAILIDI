@@ -17,5 +17,6 @@
         <module>hw05-adv-conf</module>
         <module>hw07-jdbc</module>
         <module>hw-11-jpql</module>
+        <module>hw-13-data-jpa</module>
     </modules>
 </project>

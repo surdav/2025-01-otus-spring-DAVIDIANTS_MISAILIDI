@@ -1,0 +1,23 @@
+package ru.otus.hw;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import ru.otus.hw.services.TestRunnerService;
+
+@SpringBootApplication
+public class Hw13DataJpa {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Hw13DataJpa.class, args);
+	}
+
+	@Bean
+	@Profile("!test") // The bean will not be registered in the 'test' profile
+	public CommandLineRunner libraryCommandLineRunner(TestRunnerService testRunnerService) {
+		return args -> testRunnerService.run();
+	}
+
+}
